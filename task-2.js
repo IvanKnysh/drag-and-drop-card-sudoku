@@ -6,11 +6,29 @@
 class Sudoku {
     constructor() {
         this.wrapper = document.querySelector('.task-2');
+        this.preloader = document.querySelector('#preloader');
         this.items = this.wrapper.querySelector('.items');
         this.gameArea = this.wrapper.querySelector('.game-area');
         this.areaItem = this.gameArea.querySelectorAll('li');
+
+        this.audioClick = 'audio/user-click.wav';
+        this.audioClickError = 'audio/click-error.wav';
+
         this.flag = false;
         this.coordinates = {};
+    }
+
+    soundClick(audio_src) {
+        const audio = new Audio();
+        audio.src = audio_src;
+        audio.autoplay = true;
+    }
+
+    preloadPage() {
+        setTimeout(function() {
+            this.preloader.classList.add("hide-preloader");
+            document.querySelector('.task-2').classList.add("show-game-page");
+        }, 3000);
     }
 
     changePositionStyles(target, e) {
@@ -67,6 +85,9 @@ class Sudoku {
                             const copy = target.cloneNode(true);
                             copy.removeAttribute('style');
                             item.append(copy);
+                            this.soundClick(this.audioClick);
+                        } else {
+                            this.soundClick(this.audioClickError);
                         }
                     }
                 });
@@ -85,6 +106,9 @@ class Sudoku {
                         if (item.childElementCount === 0) {
                             target.removeAttribute('style');
                             item.append(target);
+                            this.soundClick(this.audioClick);
+                        } else {
+                            this.soundClick(this.audioClickError);
                         }
                     }
                 });
@@ -118,6 +142,7 @@ class Sudoku {
     }
 
     init() {
+        this.preloadPage();
         this.changeGameAreaPosition();
         this.mousedown();
         this.mouseup();
