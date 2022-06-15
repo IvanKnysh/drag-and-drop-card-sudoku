@@ -9,7 +9,9 @@ class Cart {
         this.ul1 = this.wrapper.querySelector('#ul-content-1');
         this.cart = this.wrapper.querySelector('#ul-content-2');
         this.cartCountWrapper = this.wrapper.querySelector('#cart-count');
+        this.trash = this.wrapper.querySelector('.trash');
         this.basket = this.cart.closest('.right').getBoundingClientRect();
+        this.trashRect = this.trash.getBoundingClientRect();
         this.flag = false;
         this.coordinates = {};
     }
@@ -20,10 +22,28 @@ class Cart {
 
     hoverBasket(e) {
         if (e.pageX >= this.basket.left && e.pageX <= this.basket.right && e.pageY >= this.basket.top && e.pageY <= this.basket.bottom) {
-            this.cart.closest('.right').style.border = '2px dashed #000';
+            this.cart.closest('.right').classList.add('active');
         } else {
-            this.cart.closest('.right').style.border = '';
+            this.cart.closest('.right').classList.remove('active');
         }
+    }
+
+    hoverTrash(e) {
+        if (e.pageX >= this.trashRect.left && e.pageX <= this.trashRect.right && e.pageY >= this.trashRect.top && e.pageY <= this.trashRect.bottom) {
+            this.trash.classList.add('hover');
+        } else {
+            this.trash.classList.remove('hover');
+        }
+    }
+
+    mousedownCart() {
+        this.cart.addEventListener('mousedown', (e) => {
+            const target = e.target;
+
+            if (target.parentElement === this.cart) {
+                this.flag = true;
+            }
+        });
     }
 
     mousedown() {
@@ -55,7 +75,20 @@ class Cart {
                 }
 
                 target.removeAttribute('style');
-                this.cart.closest('.right').style.border = '';
+                this.cart.closest('.right').classList.remove('active');
+                this.cartCount();
+            }
+
+            if (target.localName === 'li' && target.parentElement === this.cart) {
+                if (e.pageX >= this.trashRect.left && e.pageX <= this.trashRect.right && e.pageY >= this.trashRect.top && e.pageY <= this.trashRect.bottom) {
+                    target.remove();
+                    this.trash.classList.remove('active');
+                } else {
+                    this.trash.classList.remove('active');
+                }
+
+                target.removeAttribute('style');
+                this.cart.closest('.right').classList.remove('active');
                 this.cartCount();
             }
         });
@@ -75,10 +108,22 @@ class Cart {
                     document.body.classList.add('disabled');
                 }
             }
+
+            if (target.parentElement === this.cart) {
+                if (this.flag) {
+                    target.style.position = 'absolute';
+                    target.style.left = (e.pageX - this.coordinates.x) + 'px';
+                    target.style.top = (e.pageY - this.coordinates.y) + 'px';
+                    target.style.zIndex = 3;
+                    this.hoverTrash(e);
+                    this.trash.classList.add('active');
+                }
+            }
         });
     }
 
     init() {
+        this.mousedownCart();
         this.mousedown();
         this.mouseup();
         this.mousemove();

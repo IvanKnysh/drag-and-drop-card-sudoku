@@ -6,7 +6,7 @@
 body.disabled:after {
     position: absolute;
     top: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.2);
     right: 0;
     bottom: 0;
     left: 0;
@@ -20,6 +20,24 @@ body.disabled:after {
     grid-template-columns: 1fr 1fr;
     margin: 0 auto 150px;
     user-select: none;
+}
+.task-1 .trash {
+    position: relative;
+    width: 100%;
+    height: 150px;
+    background-color: gray;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    visibility: hidden;
+}
+.task-1 .trash.hover {
+    background-color: red;
+    border: 2px dashed #fff;
+}
+.task-1 .trash.active {
+    visibility: visible;
 }
 .task-1 h2 {
     text-align: center;
@@ -59,10 +77,12 @@ body.disabled:after {
     padding: 25px;
 }
 .task-1 .right {
-    position: relative;
     padding: 25px;
     background: #ddd;
     z-index: 2;
+}
+.task-1 .right.active {
+    border: 2px dashed #000;
 }
 
 @media (max-width: 700px) {
