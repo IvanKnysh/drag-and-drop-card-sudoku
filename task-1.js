@@ -36,12 +36,23 @@ class Cart {
         }
     }
 
+    changePositionStyles(target, e) {
+        target.style.position = 'absolute';
+        target.style.left = (e.pageX - this.coordinates.x) + 'px';
+        target.style.top = (e.pageY - this.coordinates.y) + 'px';
+        target.style.zIndex = 3;
+    }
+
     mousedownCart() {
         this.cart.addEventListener('mousedown', (e) => {
             const target = e.target;
 
             if (target.parentElement === this.cart) {
                 this.flag = true;
+                this.coordinates = {
+                    x: e.offsetX,
+                    y: e.offsetY
+                }
             }
         });
     }
@@ -100,10 +111,7 @@ class Cart {
 
             if (target.localName === 'li') {
                 if (this.flag) {
-                    target.style.position = 'absolute';
-                    target.style.left = (e.pageX - this.coordinates.x) + 'px';
-                    target.style.top = (e.pageY - this.coordinates.y) + 'px';
-                    target.style.zIndex = 3;
+                    this.changePositionStyles(target, e);
                     this.hoverBasket(e);
                     document.body.classList.add('disabled');
                 }
@@ -111,10 +119,7 @@ class Cart {
 
             if (target.parentElement === this.cart) {
                 if (this.flag) {
-                    target.style.position = 'absolute';
-                    target.style.left = (e.pageX - this.coordinates.x) + 'px';
-                    target.style.top = (e.pageY - this.coordinates.y) + 'px';
-                    target.style.zIndex = 3;
+                    this.changePositionStyles(target, e);
                     this.hoverTrash(e);
                     this.trash.classList.add('active');
                 }
