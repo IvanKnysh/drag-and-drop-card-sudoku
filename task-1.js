@@ -20,7 +20,7 @@ class Cart {
 
     hoverBasket(e) {
         if (e.pageX >= this.basket.left && e.pageX <= this.basket.right && e.pageY >= this.basket.top && e.pageY <= this.basket.bottom) {
-            this.cart.closest('.right').style.border = '1px dashed #000';
+            this.cart.closest('.right').style.border = '2px dashed #000';
         } else {
             this.cart.closest('.right').style.border = '';
         }
@@ -45,10 +45,12 @@ class Cart {
             const target = e.target;
             this.flag = false;
 
-            if (target.localName === 'li') {
-                if (e.pageX >= this.basket.left && e.pageX <= this.basket.right) {
-                    target.removeAttribute('style');
+            document.body.classList.remove('disabled');
+
+            if (target.localName === 'li' && target.parentElement === this.ul1) {
+                if (e.pageX >= this.basket.left && e.pageX <= this.basket.right && e.pageY >= this.basket.top && e.pageY <= this.basket.bottom) {
                     const copy = target.cloneNode(true);
+                    copy.removeAttribute('style');
                     this.cart.append(copy);
                 }
 
@@ -60,7 +62,7 @@ class Cart {
     }
 
     mousemove() {
-        this.wrapper.addEventListener('mousemove', (e) => {
+        document.addEventListener('mousemove', (e) => {
             const target = e.target;
 
             if (target.localName === 'li') {
@@ -68,8 +70,9 @@ class Cart {
                     target.style.position = 'absolute';
                     target.style.left = (e.pageX - this.coordinates.x) + 'px';
                     target.style.top = (e.pageY - this.coordinates.y) + 'px';
-                    target.style.zIndex = 2;
+                    target.style.zIndex = 3;
                     this.hoverBasket(e);
+                    document.body.classList.add('disabled');
                 }
             }
         });

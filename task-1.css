@@ -3,6 +3,17 @@
     padding:0;
 }
 
+body.disabled:after {
+    position: absolute;
+    top: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    right: 0;
+    bottom: 0;
+    left: 0;
+    content: "";
+    z-index: 1;
+}
+
 .task-1 {
     max-width: 1000px;
     display: grid;
@@ -36,6 +47,7 @@
     bottom: 0;
     left: 0;
     content: "";
+    z-index: 1;
 }
 .task-1 ul li img {
     width: 97px;
@@ -47,8 +59,10 @@
     padding: 25px;
 }
 .task-1 .right {
+    position: relative;
     padding: 25px;
     background: #ddd;
+    z-index: 2;
 }
 
 @media (max-width: 700px) {
