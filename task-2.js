@@ -16,6 +16,7 @@ class Sudoku {
 
         this.flag = false;
         this.coordinates = {};
+        this.gameAreaArray = [];
     }
 
     soundClick(audio_src) {
@@ -25,9 +26,9 @@ class Sudoku {
     }
 
     preloadPage() {
-        setTimeout(function() {
+        setTimeout(() => {
             this.preloader.classList.add("hide-preloader");
-            document.querySelector('.task-2').classList.add("show-game-page");
+            this.wrapper.classList.add("show-game-page");
         }, 3000);
     }
 
@@ -36,6 +37,29 @@ class Sudoku {
         target.style.left = (e.pageX - this.coordinates.x) + 'px';
         target.style.top = (e.pageY - this.coordinates.y) + 'px';
         target.style.zIndex = 3;
+    }
+
+    fillGameAreaArray(item, i) {
+        if (item.childElementCount !== 0) {
+            const id = item.querySelector('span').dataset.id;
+            this.gameAreaArray[i] = id;
+        } else {
+            this.gameAreaArray[i] = null;
+        }
+    }
+
+    splitIntoSubarrays() {
+        const size = 4;
+        let subarray = [];
+
+        if (this.gameAreaArray.every(elem => elem !== null)) {
+            for (let i = 0; i < this.gameAreaArray.length / size; i++) {
+                subarray.push( this.gameAreaArray.slice( (i * size), (i * size) + size ) );
+            }
+
+            console.log(subarray);
+            return subarray;
+        }
     }
 
     changeGameAreaPosition() {
@@ -74,7 +98,7 @@ class Sudoku {
             this.items.classList.remove('disabled');
 
             if (target.parentElement === this.items) {
-                this.areaItem.forEach(item => {
+                this.areaItem.forEach((item, i) => {
                     const top = item.getBoundingClientRect().top;
                     const right = item.getBoundingClientRect().right;
                     const bottom = item.getBoundingClientRect().bottom;
@@ -90,9 +114,12 @@ class Sudoku {
                             this.soundClick(this.audioClickError);
                         }
                     }
+
+                    this.fillGameAreaArray(item, i);
                 });
 
                 target.removeAttribute('style');
+                this.splitIntoSubarrays();
             }
 
             if (target.parentElement.localName === 'li') {
