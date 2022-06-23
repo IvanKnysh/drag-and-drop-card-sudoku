@@ -13,23 +13,43 @@ class Sudoku {
 
         this.audioClick = 'audio/user-click.wav';
         this.audioClickError = 'audio/click-error.wav';
+        this.audioGameOver = 'audio/game-over.wav';
+        this.audioGameWin = 'audio/game-win.wav';
 
         this.flag = false;
         this.coordinates = {};
         this.gameAreaArray = [];
     }
 
-    soundClick(audio_src) {
+    soundClick(audio_src, volume) {
         const audio = new Audio();
         audio.src = audio_src;
         audio.autoplay = true;
+        if (volume) audio.volume = volume;
     }
+
 
     preloadPage() {
         setTimeout(() => {
             this.preloader.classList.add("hide-preloader");
             this.wrapper.classList.add("show-game-page");
         }, 3000);
+    }
+
+    gameResult(result) {
+        if (result === 'loss') {
+            document.querySelector('.popup').classList.add('active');
+            document.querySelector('.overlay').classList.add('active');
+            document.querySelector('.popup img').src = 'img/lose.png';
+            this.soundClick(this.audioGameOver, 0.25);
+        }
+
+        if (result === 'win') {
+            document.querySelector('.popup').classList.add('active');
+            document.querySelector('.overlay').classList.add('active');
+            document.querySelector('.popup img').src = 'img/win.gif';
+            this.soundClick(this.audioGameWin, 0.25);
+        }
     }
 
     changePositionStyles(target, e) {
@@ -41,24 +61,70 @@ class Sudoku {
 
     fillGameAreaArray(item, i) {
         if (item.childElementCount !== 0) {
-            const id = item.querySelector('span').dataset.id;
-            this.gameAreaArray[i] = id;
+            this.gameAreaArray[i] = item.querySelector('span').dataset.id;
         } else {
             this.gameAreaArray[i] = null;
         }
     }
 
+    checkArrayUniqueItems(arr) {
+        let set = new Set();
+        let result = false;
+        arr.forEach(item => set.has(item) ? result = true : set.add(item));
+        return result;
+    }
+
+    checkHorizontalArrays(arr) {
+        if (this.checkArrayUniqueItems(arr[0])) {
+            return true;
+        }
+
+        if (this.checkArrayUniqueItems(arr[1])) {
+            return true;
+        }
+
+        if (this.checkArrayUniqueItems(arr[2])) {
+            return true;
+        }
+
+        if (this.checkArrayUniqueItems(arr[3])) {
+            return true;
+        }
+    }
+
+    flipVerticalArrays(arr) {
+        let result = [];
+
+        arr.forEach(function (element, index) {
+            var group = index % 4;
+            var temp = result[group];
+
+            if (!Array.isArray(temp)) {
+                temp = [];
+            }
+
+            temp.push(element);
+            result[group] = temp;
+        });
+
+        return result;
+    }
+
     splitIntoSubarrays() {
         const size = 4;
-        let subarray = [];
+        const subarray = [];
+        const getFlipArrays = this.flipVerticalArrays(this.gameAreaArray);
 
         if (this.gameAreaArray.every(elem => elem !== null)) {
             for (let i = 0; i < this.gameAreaArray.length / size; i++) {
                 subarray.push( this.gameAreaArray.slice( (i * size), (i * size) + size ) );
             }
 
-            console.log(subarray);
-            return subarray;
+            if (this.checkHorizontalArrays(subarray) || this.checkHorizontalArrays(getFlipArrays)) {
+                this.gameResult('loss');
+            } else {
+                this.gameResult('win');
+            }
         }
     }
 
@@ -109,9 +175,9 @@ class Sudoku {
                             const copy = target.cloneNode(true);
                             copy.removeAttribute('style');
                             item.append(copy);
-                            this.soundClick(this.audioClick);
+                            this.soundClick(this.audioClick, 0.5);
                         } else {
-                            this.soundClick(this.audioClickError);
+                            this.soundClick(this.audioClickError, 0.5);
                         }
                     }
 
@@ -133,9 +199,9 @@ class Sudoku {
                         if (item.childElementCount === 0) {
                             target.removeAttribute('style');
                             item.append(target);
-                            this.soundClick(this.audioClick);
+                            this.soundClick(this.audioClick, 0.5);
                         } else {
-                            this.soundClick(this.audioClickError);
+                            this.soundClick(this.audioClickError, 0.5);
                         }
                     }
                 });
@@ -162,10 +228,6 @@ class Sudoku {
                 }
             }
         });
-    }
-
-    checkResultGame() {
-
     }
 
     init() {
