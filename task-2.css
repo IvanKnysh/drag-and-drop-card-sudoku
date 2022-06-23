@@ -195,3 +195,18 @@ body {
 .overlay.active {
     display: block;
 }
+
+@media (max-width: 600px) {
+    #preloader .welcome-text span {
+        font-size: 40px;
+    }
+
+    .popup {
+        width: calc(100% - 40px);
+    }
+
+    .popup img {
+        width: 100%;
+        max-height: initial;
+    }
+}
