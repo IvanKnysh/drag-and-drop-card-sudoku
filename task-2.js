@@ -36,6 +36,43 @@ class Sudoku {
         }, 3000);
     }
 
+    addBasicPosition(data) {
+        const getRandomItem = [];
+        let keys = [];
+        let values = [];
+
+        getRandomItem.push(data[Math.floor(Math.random() * data.length)]);
+
+        getRandomItem.forEach(item => {
+            keys = Object.keys(item);
+            values = Object.values(item);
+        });
+
+        for (let i = 0; i < values.length; i++) {
+            this.areaItem[keys[i]].insertAdjacentHTML('beforeend', `
+                <span data-id="${values[i]}">
+                    <img src="img/${values[i]}.jpg" alt="">
+                </span>
+            `);
+        }
+    }
+
+    getBasicPositionsFromJSON() {
+        fetch('game.json')
+            .then(response => {
+                if (response.status !== 200) {
+                    throw new Error('Response status is not 200');
+                }
+                return response.json();
+            })
+            .then(data => {
+                this.addBasicPosition(data);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    }
+
     gameResult(result) {
         if (result === 'loss') {
             document.querySelector('.popup').classList.add('active');
@@ -232,6 +269,7 @@ class Sudoku {
 
     init() {
         this.preloadPage();
+        this.getBasicPositionsFromJSON();
         this.changeGameAreaPosition();
         this.mousedown();
         this.mouseup();
